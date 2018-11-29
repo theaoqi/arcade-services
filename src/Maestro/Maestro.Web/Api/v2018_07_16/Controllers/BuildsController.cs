@@ -8,7 +8,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Maestro.Data;
-using Maestro.Data.Models;
 using Maestro.Web.Api.v2018_07_16.Models;
 using Microsoft.AspNetCore.ApiPagination;
 using Microsoft.AspNetCore.ApiVersioning;
@@ -98,7 +97,8 @@ namespace Maestro.Web.Api.v2018_07_16.Controllers
             {
                 query = query.Include(b => b.BuildChannels)
                     .ThenInclude(bc => bc.Channel)
-                    .Include(b => b.Assets);
+                    .Include(b => b.Assets)
+                    .Include(b => b.Dependencies);
             }
 
             return query.OrderByDescending(b => b.DateProduced);
@@ -113,6 +113,7 @@ namespace Maestro.Web.Api.v2018_07_16.Controllers
                 .Include(b => b.BuildChannels)
                 .ThenInclude(bc => bc.Channel)
                 .Include(b => b.Assets)
+                .Include(b => b.Dependencies)
                 .FirstOrDefaultAsync();
 
             if (build == null)
@@ -123,23 +124,8 @@ namespace Maestro.Web.Api.v2018_07_16.Controllers
             return Ok(new Models.Build(build));
         }
 
-        [HttpGet("/tree/{id}")]
-        [SwaggerResponse((int) HttpStatusCode.OK, Type = typeof(Models.BuildTree))]
-        [ValidateModelState]
-        public async Task<IActionResult> GetBuildTree(int id)
-        {
-            IList<Build> graph = await _context.GetBuildGraph(id);
-
-            if (graph == null || graph.Count == 0)
-            {
-                return NotFound();
-            }
-
-            return Ok(new Models.BuildTree(graph.Select(g => new Models.Build(g))));
-        }
-
         [HttpGet("latest")]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(Models.Build))]
+        [SwaggerResponse((int) HttpStatusCode.OK, Type = typeof(Models.Build))]
         [ValidateModelState]
         public async Task<IActionResult> GetLatest(
             string repository,
@@ -167,37 +153,6 @@ namespace Maestro.Web.Api.v2018_07_16.Controllers
             return Ok(new Models.Build(build));
         }
 
-        [HttpGet("tree/latest")]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(Models.BuildTree))]
-        [ValidateModelState]
-        public async Task<IActionResult> GetLatestTree(
-            string repository,
-            string commit,
-            string buildNumber,
-            int? channelId,
-            DateTimeOffset? notBefore,
-            DateTimeOffset? notAfter,
-            bool? loadCollections)
-        {
-            IQueryable<Build> query = Query(
-                repository,
-                commit,
-                buildNumber,
-                channelId,
-                notBefore,
-                notAfter,
-                loadCollections);
-            Build build = await query.OrderByDescending(o => o.DateProduced).FirstOrDefaultAsync();
-            if (build == null)
-            {
-                return NotFound();
-            }
-
-            IList<Build> graph = await _context.GetBuildGraph(build.Id);
-
-            return Ok(new Models.BuildTree(graph.Select(g => new Models.Build(g))));
-        }
-
         [HttpPost]
         [SwaggerResponse((int) HttpStatusCode.Created, Type = typeof(Models.Build))]
         [ValidateModelState]
@@ -205,16 +160,9 @@ namespace Maestro.Web.Api.v2018_07_16.Controllers
         {
             Build buildModel = build.ToDb();
             buildModel.DateProduced = DateTimeOffset.UtcNow;
-            await _context.BuildDependencies.AddRangeAsync(
-                build.Dependencies.Select(b =>
-                    new BuildDependency
-                    {
-                        Build = buildModel,
-                        DependentBuildId = b.BuildId,
-                        IsProduct = !b.IsToolset,
-                    }
-                )
-            );
+            buildModel.Dependencies = build.Dependencies != null
+                ? await _context.Builds.Where(b => build.Dependencies.Contains(b.Id)).ToListAsync()
+                : null;
             await _context.Builds.AddAsync(buildModel);
             await _context.SaveChangesAsync();
             return CreatedAtRoute(

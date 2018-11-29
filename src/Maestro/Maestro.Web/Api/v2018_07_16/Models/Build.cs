@@ -29,7 +29,7 @@ namespace Maestro.Web.Api.v2018_07_16.Models
                 .Select(c => new Channel(c))
                 .ToList();
             Assets = other.Assets?.Select(a => new Asset(a)).ToList();
-            Dependencies = other.DependentBuildIds;
+            Dependencies = other.Dependencies?.Select(b => new BuildRef {Id = b.Id}).ToList();
         }
 
         public int Id { get; }
