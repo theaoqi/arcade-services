@@ -50,7 +50,7 @@ namespace Maestro.Data.Models
         public List<BuildChannel> BuildChannels { get; set; }
 
         [NotMapped]
-        public List<int> DependentBuildIds { get; set; }
+        public List<BuildDependency> DependentBuildIds { get; set; }
     }
 
     public class BuildChannel

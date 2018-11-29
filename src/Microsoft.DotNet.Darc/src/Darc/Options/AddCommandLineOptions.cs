@@ -26,6 +26,9 @@ namespace Microsoft.DotNet.Darc.Options
         [Option('c', "commmit", Required = false, HelpText = "SHA at which the dependency was produced.")]
         public string Commit { get; set; }
 
+        [Option('b', "build-id", Required = false, HelpText = "Maestro Build ID that produced this build.")]
+        public int BuildId{ get; set; }
+
         public override Operation GetOperation()
         {
             return new AddOperation(this);

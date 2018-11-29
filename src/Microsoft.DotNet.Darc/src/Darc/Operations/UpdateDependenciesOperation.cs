@@ -146,7 +146,8 @@ namespace Microsoft.DotNet.Darc.Operations
                             // If casing changes, ensure that the dependency name gets updated.
                             Name = buildAsset.Name,
                             RepoUri = build.Repository,
-                            Version = buildAsset.Version
+                            Version = buildAsset.Version,
+                            BuildId = build.Id.GetValueOrDefault(),
                         };
 
                         dependenciesToUpdate.Add(updatedDependency);

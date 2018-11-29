@@ -22,7 +22,7 @@ namespace Maestro.Web.Api.v2018_07_16.Controllers
     [ApiVersion("2018-07-16")]
     public class BuildsController : Controller
     {
-        private readonly BuildAssetRegistryContext _context;
+        protected readonly BuildAssetRegistryContext _context;
 
         public BuildsController(BuildAssetRegistryContext context)
         {
@@ -97,8 +97,7 @@ namespace Maestro.Web.Api.v2018_07_16.Controllers
             {
                 query = query.Include(b => b.BuildChannels)
                     .ThenInclude(bc => bc.Channel)
-                    .Include(b => b.Assets)
-                    .Include(b => b.Dependencies);
+                    .Include(b => b.Assets);
             }
 
             return query.OrderByDescending(b => b.DateProduced);
@@ -113,7 +112,6 @@ namespace Maestro.Web.Api.v2018_07_16.Controllers
                 .Include(b => b.BuildChannels)
                 .ThenInclude(bc => bc.Channel)
                 .Include(b => b.Assets)
-                .Include(b => b.Dependencies)
                 .FirstOrDefaultAsync();
 
             if (build == null)
@@ -156,13 +154,14 @@ namespace Maestro.Web.Api.v2018_07_16.Controllers
         [HttpPost]
         [SwaggerResponse((int) HttpStatusCode.Created, Type = typeof(Models.Build))]
         [ValidateModelState]
-        public async Task<IActionResult> Create([FromBody] BuildData build)
+        public virtual async Task<IActionResult> Create([FromBody] BuildData build)
         {
             Build buildModel = build.ToDb();
             buildModel.DateProduced = DateTimeOffset.UtcNow;
-            buildModel.Dependencies = build.Dependencies != null
-                ? await _context.Builds.Where(b => build.Dependencies.Contains(b.Id)).ToListAsync()
-                : null;
+            if (build.Dependencies?.Count > 0)
+            {
+                return BadRequest("Version does not support dependencies");
+            }
             await _context.Builds.AddAsync(buildModel);
             await _context.SaveChangesAsync();
             return CreatedAtRoute(

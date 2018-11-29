@@ -294,13 +294,13 @@ FROM traverse;",
             Dictionary<int, Build> dict = await builds.ToDictionaryAsync(b => b.Id,
                 b =>
                 {
-                    b.DependentBuildIds = new List<int>();
+                    b.DependentBuildIds = new List<BuildDependency>();
                     return b;
                 });
 
             foreach (var edge in things)
             {
-                dict[edge.BuildId].DependentBuildIds.Add(edge.DependentBuildId);
+                dict[edge.BuildId].DependentBuildIds.Add(edge);
             }
 
             return dict.Values.ToList();
