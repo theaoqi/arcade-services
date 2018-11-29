@@ -27,6 +27,7 @@ namespace Maestro.Web.Api.v2018_07_16.Models
                     Scheme = "https",
                     Host = context.Request.GetUri().Host,
                     Path = url.Action(
+                        // ReSharper disable once Mvc.ActionNotResolved
                         nameof(SubscriptionsController.RetrySubscriptionActionAsync),
                         new
                         {

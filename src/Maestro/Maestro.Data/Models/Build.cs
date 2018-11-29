@@ -47,10 +47,10 @@ namespace Maestro.Data.Models
 
         public List<Asset> Assets { get; set; }
 
-        [ForeignKey("DependencyBuildId")]
-        public List<Build> Dependencies { get; set; }
-
         public List<BuildChannel> BuildChannels { get; set; }
+
+        [NotMapped]
+        public List<int> DependentBuildIds { get; set; }
     }
 
     public class BuildChannel
@@ -59,5 +59,13 @@ namespace Maestro.Data.Models
         public Build Build { get; set; }
         public int ChannelId { get; set; }
         public Channel Channel { get; set; }
+    }
+
+    public class BuildDependency
+    {
+        public bool IsProduct { get; set; }
+        public Build Build { get; set; }
+        public int BuildId { get; set; }
+        public int DependentBuildId { get; set; }
     }
 }

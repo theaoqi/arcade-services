@@ -23,7 +23,7 @@ namespace Maestro.Web.Api.v2018_07_16.Models
 
         public List<AssetData> Assets { get; set; }
 
-        public List<int> Dependencies { get; set; }
+        public List<BuildRef> Dependencies { get; set; }
 
         public Data.Models.Build ToDb()
         {
@@ -36,5 +36,17 @@ namespace Maestro.Web.Api.v2018_07_16.Models
                 Assets = Assets.Select(a => a.ToDb()).ToList()
             };
         }
+    }
+
+    public class BuildRef
+    {
+        public BuildRef(int buildId, bool isToolset)
+        {
+            IsToolset = isToolset;
+            BuildId = buildId;
+        }
+
+        public bool IsToolset { get; }
+        public int BuildId { get; }
     }
 }

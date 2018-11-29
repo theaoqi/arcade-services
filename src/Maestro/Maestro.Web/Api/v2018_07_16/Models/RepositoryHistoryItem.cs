@@ -24,6 +24,7 @@ namespace Maestro.Web.Api.v2018_07_16.Models
             if (!other.Success)
             {
                 string pathAndQuery = url.Action(
+                    // ReSharper disable once Mvc.ActionNotResolved
                     nameof(RepositoryController.RetryActionAsync),
                     new
                     {
