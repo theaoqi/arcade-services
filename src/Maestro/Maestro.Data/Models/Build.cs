@@ -43,6 +43,8 @@ namespace Maestro.Data.Models
 
         public string BuildNumber { get; set; }
 
+        public string BuildId { get; set; }
+
         public DateTimeOffset DateProduced { get; set; }
 
         public List<Asset> Assets { get; set; }
