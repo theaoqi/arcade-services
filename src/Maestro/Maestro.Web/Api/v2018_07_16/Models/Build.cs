@@ -23,6 +23,9 @@ namespace Maestro.Web.Api.v2018_07_16.Models
             Branch = other.Branch;
             Commit = other.Commit;
             BuildNumber = other.BuildNumber;
+            AzureDevOpsBuildId = other.AzureDevOpsBuildId;
+            AzureDevOpsAccount = other.AzureDevOpsAccount;
+            AzureDevOpsProject = other.AzureDevOpsProject;
             DateProduced = other.DateProduced;
             Channels = other.BuildChannels?.Select(bc => bc.Channel)
                 .Where(c => c != null)
@@ -41,6 +44,12 @@ namespace Maestro.Web.Api.v2018_07_16.Models
         public string Commit { get; }
 
         public string BuildNumber { get; }
+
+        public string AzureDevOpsBuildId { get; }
+
+        public string AzureDevOpsAccount { get; }
+
+        public string AzureDevOpsProject { get; }
 
         public DateTimeOffset DateProduced { get; }
 

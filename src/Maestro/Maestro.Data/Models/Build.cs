@@ -43,6 +43,12 @@ namespace Maestro.Data.Models
 
         public string BuildNumber { get; set; }
 
+        public string AzureDevOpsBuildId { get; set; }
+
+        public string AzureDevOpsAccount { get; set; }
+
+        public string AzureDevOpsProject { get; set; }
+
         public DateTimeOffset DateProduced { get; set; }
 
         public List<Asset> Assets { get; set; }

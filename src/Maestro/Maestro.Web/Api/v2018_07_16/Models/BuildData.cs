@@ -21,6 +21,12 @@ namespace Maestro.Web.Api.v2018_07_16.Models
         [Required]
         public string BuildNumber { get; set; }
 
+        public string AzureDevOpsBuildId { get; }
+
+        public string AzureDevOpsAccount { get; }
+
+        public string AzureDevOpsProject { get; }
+
         public List<AssetData> Assets { get; set; }
 
         public List<int> Dependencies { get; set; }
@@ -33,6 +39,9 @@ namespace Maestro.Web.Api.v2018_07_16.Models
                 Branch = Branch,
                 Commit = Commit,
                 BuildNumber = BuildNumber,
+                AzureDevOpsBuildId = AzureDevOpsBuildId,
+                AzureDevOpsAccount = AzureDevOpsAccount,
+                AzureDevOpsProject = AzureDevOpsProject,
                 Assets = Assets.Select(a => a.ToDb()).ToList()
             };
         }
