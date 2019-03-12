@@ -2,6 +2,8 @@ variables:
   # Cannot use key:value syntax in root defined variables
   - name: _TeamName
     value: DotNetCore
+  - name: _PublishUsingPipelines
+    value: true
 
 # CI and PR triggers
 trigger:
@@ -51,6 +53,7 @@ jobs:
             /p:DotNetPublishToBlobFeed=$(_DotNetPublishToBlobFeed)
             /p:DotNetSymbolServerTokenMsdl=$(microsoft-symbol-server-pat)
             /p:DotNetSymbolServerTokenSymWeb=$(symweb-symbol-server-pat)
+            /p:DotNetPublishUsingPipelines=$(_PublishUsingPipelines)
             /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
       # In production, create stable package versions
       # TODO: We depend on a prerelease version of Microsoft.TeamFoundationServer.Client
